@@ -1,0 +1,8 @@
+node_modules/
+dist/
+npm-debug.log
+.DS_Store
+!/node_modules/vue-cordova/
+!/node_modules/vue2-google-maps/dist/manager.js
+!/node_modules/vue-cordova/index.js
+!/node_modules/vuetify/src/stylus/settings/_colors.styl

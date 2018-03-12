@@ -1,0 +1,32 @@
+{
+    "android": {
+        "debug": {
+            "keystore": "./platforms/android/fisherbook.keystore",
+            "storePassword": "Jvm2jwxS22",
+            "alias": "fisherbook",
+            "password" : "Jvm2jwxS22",
+            "keystoreType": ""
+        },
+        "release": {
+            "keystore": "./platforms/android/fisherbook.keystore",
+            "storePassword": "Jvm2jwxS22",
+            "alias": "fisherbook",
+            "password" : "Jvm2jwxS22",
+            "keystoreType": ""
+        }
+    },
+    "ios": {
+        "debug": {
+            "codeSignIdentity": "iPhone Development",
+            "provisioningProfile": "258729a0-3e13-4939-9be0-2557b2da0de0",
+            "developmentTeam": "7GXNM38725",
+            "packageType": "development"
+        },
+        "release": {
+            "codeSignIdentity": "iPhone Distribution",
+            "provisioningProfile": "258729a0-3e13-4939-9be0-2557b2da0de0",
+            "developmentTeam": "7GXNM38725",
+            "packageType": "app-store"
+        }
+    }
+}

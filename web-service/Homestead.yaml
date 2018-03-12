@@ -1,0 +1,42 @@
+---
+ip: "192.168.10.10"
+memory: 2048
+cpus: 2
+provider: virtualbox
+#mariadb: true
+
+authorize: ~/.ssh/id_rsa.pub
+
+keys:
+    - ~/.ssh/id_rsa
+
+folders:
+    - map: C:\Caio\projects
+      to: /home/vagrant/Code
+
+sites:
+    - map: tasklist.app
+      to: /home/vagrant/Code/task-list/web-service/public
+
+databases:
+    - tasklist
+
+networks:
+    #- type: "public_network"
+      #ip: "192.168.10.10"
+      #bridge: "802.11n USB Wireless LAN Card"
+    - type: "private_network"
+      ip: "192.168.10.10"
+
+# blackfire:
+#     - id: foo
+#       token: bar
+#       client-id: foo
+#       client-token: bar
+
+# ports:
+#     - send: 50000
+#       to: 5000
+#     - send: 7777
+#       to: 777
+#       protocol: udp
