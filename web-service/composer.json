@@ -1,6 +1,6 @@
 {
     "name": "laravel/laravel",
-    "description": "Fisherbook web service",
+    "description": "Task list web service",
     "keywords": ["framework","laravel","tasklist"],
     "license": "MIT",
     "type": "project",
