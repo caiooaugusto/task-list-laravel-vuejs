@@ -1,6 +1,6 @@
 # app
 
-> Fisherbook
+> Task list
 
 ## Build Setup
 
