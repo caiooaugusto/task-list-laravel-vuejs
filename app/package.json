@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "description": "Fisherbook",
+  "description": "Task list",
   "author": "Caio Augusto Peixer da Silva - Bit Wizard",
   "private": true,
   "scripts": {

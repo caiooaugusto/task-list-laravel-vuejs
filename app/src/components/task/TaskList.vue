@@ -18,9 +18,8 @@
             <template slot="items" scope="props">
                 <tr
                     @click="props.expanded = !props.expanded"
-                    :class="{
-                        'finished-task': props.item.status === true
-                    }"
+                    v-if="props.item.status === true"
+                    style="color: forestgreen !important"
                 >
                     <td>{{ props.item.title }}</td>
                     <td class="text-xs-right">{{ props.item.description }}</td>
@@ -34,6 +33,25 @@
                             :value="props.item.status"
                             type="checkbox"
                             :disabled="true"
+                        ></v-checkbox>
+                    </td>
+                </tr>
+                <tr
+                        @click="props.expanded = !props.expanded"
+                        v-else
+                >
+                    <td>{{ props.item.title }}</td>
+                    <td class="text-xs-right">{{ props.item.description }}</td>
+                    <td class="text-xs-right">{{props.item.deadline_date_string}}</td>
+                    <td class="text-xs-right">{{ props.item.created_at }}</td>
+                    <td class="text-xs-right">{{ props.item.updated_at }}</td>
+                    <td class="text-xs-right">{{ props.item.deleted_at }}</td>
+                    <td class="text-xs-right">
+                        <v-checkbox
+                                v-model="props.item.status"
+                                :value="props.item.status"
+                                type="checkbox"
+                                :disabled="true"
                         ></v-checkbox>
                     </td>
                 </tr>
@@ -344,5 +362,5 @@
         margin 10px 30px 30px 30px
 
     .finished-task
-        background-color #58ff68 !important
+        color #58ff68 !important
 </style>

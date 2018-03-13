@@ -1,6 +1,7 @@
 <template>
     <v-toolbar light class="toolbar-tasklist">
-        <logo class="logo-toolbar"></logo>
+        <div class="toolbar-title"> Task list Laravel, VueJS2, VuetifyJS including Cordova</div>
+        <!--<logo class="logo-toolbar"></logo>-->
     </v-toolbar>
 </template>
 
@@ -20,6 +21,10 @@
 </script>
 
 <style lang="stylus" scoped>
+    .toolbar-title
+        font-size 20px
+        font-weight 600
+
     .toolbar-tasklist
         z-index 1
         top 0px

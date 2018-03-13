@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.expoville.rfid;
+package com.tasklist.test;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
