@@ -38,8 +38,8 @@ Vue.http.interceptors.push(function(request, next) {
     next();
 });
 
-Vue.http.options.root = 'http://tasklist.app/api';
-//Vue.http.options.root = 'https://task-list-test.herokuapp.com/api';
+//Vue.http.options.root = 'http://tasklist.app/api';
+Vue.http.options.root = 'https://task-list-test.herokuapp.com/api';
 
 //vue resource loadingbar
 const progressbarOptions = {

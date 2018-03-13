@@ -12,5 +12,5 @@ class Task extends Authenticatable
 
     protected $table = 'task';
 
-    protected $fillable = [' title','status','description','deadline_date','deadline_date_string'];
+    protected $fillable = ['title','description','deadline_date_string','status'];
 }

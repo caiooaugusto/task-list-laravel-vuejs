@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'pgsql'),
+    'default' => env('DB_CONNECTION', 'heroku'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     */
 
     'connections' => [
-        /*'heroku' => [
+        'heroku' => [
             'driver'   => 'pgsql',
             'host'     => parse_url(getenv("DATABASE_URL"))["host"],
             'database' => substr(parse_url(getenv("DATABASE_URL"))["path"], 1),
@@ -42,8 +42,8 @@ return [
             'prefix'   => '',
             'schema'   => 'public',
             'sslmode' => 'prefer'
-        ],*/
-        'pgsql' => [
+        ],
+        /*'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '5432'),
@@ -55,7 +55,7 @@ return [
             'schema' => 'public',
             'sslmode' => 'prefer'
         ]
-        /*
+
                     'sqlite' => [
                         'driver' => 'sqlite',
                         'database' => env('DB_DATABASE', database_path('database.sqlite')),

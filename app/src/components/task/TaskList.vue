@@ -16,15 +16,26 @@
             item-key="id"
         >
             <template slot="items" scope="props">
-                <tr @click="props.expanded = !props.expanded">
+                <tr
+                    @click="props.expanded = !props.expanded"
+                    :class="{
+                        'finished-task': props.item.status === true
+                    }"
+                >
                     <td>{{ props.item.title }}</td>
                     <td class="text-xs-right">{{ props.item.description }}</td>
-                    <td class="text-xs-right">{{ props.item.deadline_date }}</td>
                     <td class="text-xs-right">{{props.item.deadline_date_string}}</td>
                     <td class="text-xs-right">{{ props.item.created_at }}</td>
                     <td class="text-xs-right">{{ props.item.updated_at }}</td>
                     <td class="text-xs-right">{{ props.item.deleted_at }}</td>
-                    <td class="text-xs-right">{{ props.item.finished_at }}</td>
+                    <td class="text-xs-right">
+                        <v-checkbox
+                            v-model="props.item.status"
+                            :value="props.item.status"
+                            type="checkbox"
+                            :disabled="true"
+                        ></v-checkbox>
+                    </td>
                 </tr>
             </template>
             <template slot="expand" scope="props">
@@ -32,7 +43,7 @@
                     <form class="form-user">
                         <v-text-field
                             v-model="props.item.title"
-                            label="TITLE"
+                            label="Title"
                             :counter="10"
                             :error-messages="errors.collect('title')"
                             v-validate="'required|min:3|max:100'"
@@ -51,7 +62,7 @@
                         <v-menu
                             lazy
                             :close-on-content-click="false"
-                            v-model="menu1"
+                            v-model="menuDeadlineDate"
                             transition="scale-transition"
                             offset-y
                             full-width
@@ -60,11 +71,7 @@
                             min-width="290px"
                         >
                             <v-text-field
-                                :error-messages="errors.collect('props.item.deadline_date_string')"
-                                v-validate="'required'"
-                                data-vv-name="validade"
                                 day-format="Date::toLocaleDateString('pt-BR',{ day: 'numeric' })"
-                                required
                                 slot="activator"
                                 label="Deadline date"
                                 v-model="props.item.deadline_date_string"
@@ -72,8 +79,8 @@
                                 readonly
                             ></v-text-field>
                             <v-date-picker
-                                v-model="validadeFormatted"
-                                @change="props.item.deadline_date_string = formatDate(validadeFormatted)"
+                                v-model="deadline_date_form_formatted"
+                                @change="props.item.deadline_date_string = formatDate(deadline_date_form_formatted)"
                                 @input="props.item.deadline_date_string = formatDate($event)"
                                 no-title scrollable actions>
                                 <template slot-scope="{ save, cancel }">
@@ -85,8 +92,14 @@
                                 </template>
                             </v-date-picker>
                         </v-menu>
-                        <v-btn color="primary" @click="updateUser(props.item)">Update</v-btn>
-                        <v-btn color="red" style='color: white' @click="deleteUser(props.item)">Delete</v-btn>
+                        <v-checkbox
+                            v-model="props.item.status"
+                            :value="props.item.status"
+                            label="Finished?"
+                            type="checkbox"
+                        ></v-checkbox>
+                        <v-btn color="primary" @click="updateTask(props.item)">Update</v-btn>
+                        <v-btn color="red" style='color: white' @click="deleteTask(props.item)">Delete</v-btn>
                     </form>
                 </v-card>
             </template>
@@ -95,91 +108,70 @@
         <v-dialog v-model="dialog2" max-width="500px">
             <v-card>
                 <v-card-title>
-                    Cadastro de novo usuário
+                    New task
                 </v-card-title>
                 <v-card-text>
                     <form class="form-user">
                         <v-text-field
-                            v-model="rfidform"
-                            label="RFID"
-                            :counter="10"
-                            :error-messages="errors.collect('rfidform')"
-                            v-validate="'required|max:10'"
-                            data-vv-name="rfidform"
-                            required
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="nameform"
-                            label="Nome do condutor"
+                            v-model="title_form"
+                            label="Title"
                             :counter="100"
-                            :error-messages="errors.collect('nameform')"
-                            v-validate="'required|max:100|min:4'"
-                            data-vv-name="nameform"
+                            :error-messages="errors.collect('title_form')"
+                            v-validate="'required|min:3|max:100'"
+                            data-vv-name="title_form"
                             required
                         ></v-text-field>
                         <v-text-field
-                            v-model="placaform"
-                            label="Placa do veículo"
-                            :counter="7"
-                            :error-messages="errors.collect('placaform')"
-                            v-validate="'required|max:7|min:7'"
-                            data-vv-name="placaform"
+                            v-model="description_form"
+                            label="Description"
+                            :counter="100"
+                            :error-messages="errors.collect('description_form')"
+                            v-validate="'required|max:100|min:3'"
+                            data-vv-name="description_form"
                             required
                         ></v-text-field>
                         <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menu"
-                                transition="scale-transition"
-                                offset-y
-                                full-width
-                                :nudge-right="40"
-                                max-width="290px"
-                                min-width="290px"
+                            lazy
+                            :close-on-content-click="false"
+                            v-model="menuDeadlineDateForm"
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            :nudge-right="40"
+                            max-width="290px"
+                            min-width="290px"
                         >
                             <v-text-field
-                                :error-messages="errors.collect('validadeform')"
-                                v-validate="'required'"
-                                data-vv-name="validadeform"
+                                :error-messages="errors.collect('deadline_date_string_form')"
+                                data-vv-name="deadline_date_string_form"
                                 day-format="Date::toLocaleDateString('pt-BR',{ day: 'numeric' })"
-                                required
                                 slot="activator"
-                                label="Válidade até"
-                                v-model="validadeformFormatted"
+                                label="Deadline date"
+                                v-model="deadline_date_string_form_formatted"
                                 prepend-icon="event"
                                 readonly
-                                @blur="validadeform = parseDate(validadeformFormatted)"
+                                @blur="deadline_date_string_form = parseDate(deadline_date_string_form_formatted)"
                             ></v-text-field>
-                            <v-date-picker v-model="validadeform" @input="validadeformFormatted = formatDate($event)" no-title scrollable actions>
+                            <v-date-picker v-model="deadline_date_string_form" @input="deadline_date_string_form_formatted = formatDate($event)" no-title scrollable actions>
                                 <template slot-scope="{ save, cancel }">
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn flat color="primary" @click="cancel">Cancelar</v-btn>
+                                        <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
                                         <v-btn flat color="primary" @click="save">OK</v-btn>
                                     </v-card-actions>
                                 </template>
                             </v-date-picker>
                         </v-menu>
-                        <v-text-field
-                            v-model="cpfform"
-                            label="CPF"
-                            :counter="11"
-                            :error-messages="errors.collect('cpfform')"
-                            v-validate="'min:11|max:11'"
-                            data-vv-name="cpfform"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="empresaform"
-                            label="Empresa"
-                            :counter="100"
-                            :error-messages="errors.collect('empresaform')"
-                            v-validate="'max:100|min:3'"
-                            data-vv-name="empresaform"
-                        ></v-text-field>
+                        <v-checkbox
+                            v-model="status_form"
+                            :value="status_form"
+                            label="Finished?"
+                            type="checkbox"
+                        ></v-checkbox>
                     </form>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn :disabled="errors.any()" color="primary" @click="createUser">Salvar</v-btn>
+                    <v-btn :disabled="errors.any()" color="primary" @click="createTask">Salvar</v-btn>
                     <v-btn color="warning" @click="clearForm">Limpar campos</v-btn>
                     <v-btn color="primary" flat @click.stop="dialog2=false">Cancelar</v-btn>
                 </v-card-actions>
@@ -203,32 +195,24 @@
             return {
                 search: "",
                 dialog2: false,
-                menu: false,
-                menu1: false,
-                name: '',
-                rfid: '',
-                cpf: '',
-                placa: '',
-                empresa: '',
-                validade: null,
-                validadeFormatted: null,
-                nameform: '',
-                rfidform: '',
-                cpfform: '',
-                placaform: '',
-                empresaform: '',
-                validadeform: null,
-                validadeformFormatted: null,
-                headers: [
-                    { text: 'RFID', value: 'rfid', align: 'left', sortable: false },
-                    { text: 'Nome', value: 'name' },
-                    { text: 'Placa', value: 'placa' },
-                    { text: 'Válido até', value: 'validade' },
-                    { text: 'CPF', value: 'cpf' },
-                    { text: 'Empresa', value: 'empresa' }
-                ],
+                menuDeadlineDate: false,
+                menuDeadlineDateForm: false,
                 items: [],
-                allItems: []
+                allItems: [],
+                title_form: '',
+                description_form: '',
+                deadline_date_string_form: null,
+                deadline_date_string_form_formatted: null,
+                status_form: false,
+                headers: [
+                    { text: 'Title', value: 'title', align: 'left' },
+                    { text: 'Description', value: 'description' },
+                    { text: 'Deadline date', value: 'deadline_date_string' },
+                    { text: 'Created at', value: 'created_at' },
+                    { text: 'Updated at', value: 'updated_at' },
+                    { text: 'Deleted at', value: 'deleted_at' },
+                    { text: 'Finished?', value: 'status' },
+                ]
             }
         },
         mounted(){
@@ -245,15 +229,15 @@
         watch: {
             search (query, queryOld) {
                 if(query.length) {
-                    this.searchUsers()
+                    this.searchTasks()
                 }else{
                     this.items = this.allItems
                 }
             }
         },
         methods: {
-            searchUsers(){
-                this.items = this.allItems.filter(user => user.name.toLowerCase().includes(this.search.toLowerCase()))
+            searchTasks(){
+                this.items = this.allItems.filter(task => task.title.toLowerCase().includes(this.search.toLowerCase()))
             },
             formatDate (date) {
                 console.log('date')
@@ -273,39 +257,38 @@
                 const [month, day, year] = date.split('/')
                 return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
             },
-            createUser () {
+            createTask () {
                 this.$validator.validateAll()
                 if(!this.errors.any()){
-                    this.$http.post('task/create', { name: this.nameform, rfid: this.rfidform, cpf: this.cpfform, placa: this.placaform, empresa: this.empresaform, date: this.validadeformFormatted})
+                    this.$http.post('task/create', { title: this.title_form, description: this.description_form, deadline_date_string: this.deadline_date_string_form_formatted, status: this.status_form})
                         .then(response => {
                             this.dialog2 = false
-                            this.getUsers()
+                            this.getTasks()
                             return response.json()
                         }, error => {
-                            alert("RFID já cadastrado!")
+                            alert("Oops, try again!")
                         })
                         .then(data => {})
                 }
             },
-            deleteUser (user) {
-                console.log(user)
-                this.$http.post('task/delete', { id: user.id })
+            deleteTask (task) {
+                this.$http.post('task/delete', { id: task.id })
                     .then(response => {
-                        this.getUsers()
+                        this.getTasks()
                         return response.json()
                     }, error => {
                         alert(JSON.stringify(error))
                     })
                     .then(data => {})
             },
-            updateUser (user) {
+            updateTask (task) {
+                console.log('task')
+                console.log(task)
+
                 if(!this.errors.any()){
-                    console.log('user to update')
-                    console.log(user.date)
-                    this.$http.put('task/update', user)
+                    this.$http.put('task/update', task)
                         .then(response => {
-                            //this.dialog2 = false
-                            this.getUsers()
+                            this.getTasks()
                             return response.json()
                         }, error => {
                             alert(JSON.stringify(error))
@@ -313,7 +296,7 @@
                         .then(data => {})
                 }
             },
-            getUsers(){
+            getTasks(){
                 this.$http.get('task/get')
                     .then(response => {
                         return response.json()
@@ -323,22 +306,12 @@
                     this.items = data;
                 })
             },
-            clear () {
-                this.name = ''
-                this.rfid = ''
-                this.cpf = ''
-                this.placa = ''
-                this.empresa = ''
-                this.validade = null
-                this.$validator.reset()
-            },
             clearForm () {
-                this.nameform = ''
-                this.rfidform = ''
-                this.cpfform = ''
-                this.placaform = ''
-                this.empresaform = ''
-                this.validadeform = null
+                this.title_form = ''
+                this.description_form = ''
+                this.deadline_date_string_form = null
+                this.deadline_date_string_form_formatted = null
+                this.status_form = false
                 this.$validator.reset()
             }
         }
@@ -369,4 +342,7 @@
 
     .form-user
         margin 10px 30px 30px 30px
+
+    .finished-task
+        background-color #58ff68 !important
 </style>
